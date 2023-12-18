@@ -14,7 +14,7 @@ class User {
 
   //Login on Fallah Account
   //isTeacher = is user is teacher change false if User is Student must true
-  async Login(email, password, isTeacher = false, callback) {
+  static async Login(email, password, isTeacher = false, callback) {
     const coockie = await this.Get_Coockie();
     const usr = isTeacher ? "2" : "1";
     var Response = await superagent
@@ -51,7 +51,7 @@ class User {
   }
 
   //Find email And Password
-  async FindEmailAndPassword(name, callback) {
+  static async FindEmailAndPassword(name, callback) {
     this.Login("fallah@aram.khd", "12345608", true, async (Name, coockie) => {
       const Response = await superagent
         .get("http://baazmooon.ir/listteacher.php")
@@ -81,11 +81,11 @@ class User {
       }
     });
   }
-}
 
-const u = new User();
-u.FindEmailAndPassword("عرفان عابدین پور", (data) => {
-  console.log(data);
-});
+  //Azmoon
+  static async Azmon(course, pdmn) {
+    return null;
+  }
+}
 
 module.exports = User;
