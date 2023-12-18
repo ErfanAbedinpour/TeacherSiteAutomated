@@ -43,10 +43,6 @@ async function Answers(course = 1, pdmn = 1, callback) {
   });
 }
 
-Answers(1, 2, (result) => {
-  console.log(result);
-});
-
 module.exports = {
   getAnswer: Answers,
 };
