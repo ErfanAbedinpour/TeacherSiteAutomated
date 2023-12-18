@@ -1,0 +1,18 @@
+{
+  "name": "nodejsfallahauomate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "run":"node FallahAcountSource/Script.js"
+  },
+  "author": "Erfan",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "jsdom": "^22.1.0",
+    "request": "^2.88.2",
+    "superagent": "^8.1.2"
+  }
+}
