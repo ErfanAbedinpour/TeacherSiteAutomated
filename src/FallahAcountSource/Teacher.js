@@ -1,6 +1,7 @@
 const superagent = require("superagent");
 const { JSDOM } = require("jsdom");
 
+//Teacher Entity
 class Teacher {
   constructor() {
     this.email = "fallah@aram.khd";
@@ -43,18 +44,22 @@ class Teacher {
     const dom = new JSDOM(Response.text);
     const tags = dom.window.document.querySelector("ul");
     const Name = tags.textContent.match(/\(\w.+\)/);
+    var err =
+      "Faild To Login please Check Email or password \nor Turn off VPN or any ipChanger";
     if (Name != null) {
-      callback(Name[0], this.coockie);
+      callback((err = null), Name[0], this.coockie);
     } else {
-      const err =
-        "Faild To Login please Check Email or password \nor Turn off VPN or any IpChanger";
-      callback(err);
+      callback((err = new Error(err)));
     }
   }
 
   //retuen Quiz Answer
   async Answer(course, pdmn, callback) {
-    this.Login(async (name, coockie) => {
+    this.Login(async (err, name, coockie) => {
+      if (err) {
+        throw err;
+      }
+      console.log("sucsesfully Login in Fallah Account");
       var Response = await superagent
         .post("http://baazmooon.ir/addquestion.php")
         .set(
@@ -88,7 +93,11 @@ class Teacher {
         result.push({ ...CreateObject });
         answer += 6;
       }
-      callback(result);
+      if (result[0]) {
+        callback((err = null), result);
+      } else {
+        callback((err = new Error("Not Found Any Quiz")));
+      }
     });
   }
 
@@ -128,4 +137,8 @@ class Teacher {
   }
 }
 
+const t = new Teacher();
+t.Answer(2, 2, (err, res) => {
+  console.log(res);
+});
 module.exports = Teacher;
