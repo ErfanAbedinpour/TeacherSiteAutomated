@@ -1,6 +1,10 @@
+//Modules
 const { JSDOM } = require("jsdom");
 const superagent = require("superagent");
-// const Answer = require("./GetQuizAnswer");
+const Teacher = require("./Teacher");
+
+//Teacher Instance
+const teacher = new Teacher();
 
 //User Entity
 class User {
@@ -78,7 +82,9 @@ class User {
   }
 
   //this is AutoMatic Resolve Azmon
+
   async Azmon(course, pdmn) {
+    //chooise Teacher For Quiz
     await superagent
       .post("http://baazmooon.ir/azmoon.php")
       .set(
@@ -104,7 +110,7 @@ class User {
         tchr: "1",
       });
 
-    const result = await superagent
+    const Response = await superagent
       .post("http://baazmooon.ir/qus_show.php")
       .set(
         "Accept",
@@ -129,15 +135,53 @@ class User {
         cat: String(course),
         pdmn: String(pdmn),
       });
-    const dom = new JSDOM(result.text);
+
+    const data = {};
+    const dom = new JSDOM(Response.text);
     const Tags = dom.window.document.querySelectorAll("b");
-    Tags.forEach((i) => {
-      const quiz = i.textContent.replace(/سوال \d/, "");
-      console.log(quiz);
+    teacher.Answer(course, pdmn, async (err, answer) => {
+      if (err) {
+        throw err;
+      }
+      Tags.forEach((i) => {
+        const quiz = i.textContent.replace("سوال", "").split("  ")[0].trim();
+        data[quiz] = String(answer[quiz]);
+      });
+      await this.SendAnswer(data);
+      await this.LogOut();
     });
-    this.LogOut((r) => {
-      console.log(r);
-    });
+  }
+
+  //Send Azmoon Answer For Get Result
+  async SendAnswer(data) {
+    const Response = await superagent
+      .post("http://baazmooon.ir/answer.php")
+      .set(
+        "Accept",
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+      )
+      .set(
+        "Accept-Language",
+        "fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7,zh-CN;q=0.6,zh;q=0.5"
+      )
+      .set("Cache-Control", "max-age=0")
+      .set("Connection", "keep-alive")
+      .set("Cookie", this.coockie)
+      .set("Origin", "http://baazmooon.ir")
+      .set("Referer", "http://baazmooon.ir/qus_show.php")
+      .set("Upgrade-Insecure-Requests", "1")
+      .set(
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      )
+      .type("form")
+      .send(data);
+
+    const dom = new JSDOM(Response.text);
+    const Tags = await dom.window.document.querySelectorAll("th");
+    console.log(
+      `تعداد سوالات: ${Tags[2].textContent.trim()}\n پاسخ درست: ${Tags[4].textContent.trim()}\n نمره نهایی :${Tags[10].textContent.trim()}`
+    );
   }
 }
 
@@ -148,4 +192,4 @@ setTimeout(async () => {
     console.log(name);
   });
   await user.Azmon(2, 2);
-}, 1000);
+}, 5000);

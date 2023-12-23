@@ -1,11 +1,13 @@
+//Modules
 const superagent = require("superagent");
 const { JSDOM } = require("jsdom");
+require("dotenv").config();
 
 //Teacher Entity
 class Teacher {
   constructor() {
-    this.email = "fallah@aram.khd";
-    this.password = "12345608";
+    this.email = process.env.FallahAccount;
+    this.password = process.env.Fallahpassword;
     this.coockie = null;
   }
 
@@ -59,7 +61,6 @@ class Teacher {
       if (err) {
         throw err;
       }
-      console.log("sucsesfully Login in Fallah Account");
       var Response = await superagent
         .post("http://baazmooon.ir/addquestion.php")
         .set(
@@ -84,16 +85,13 @@ class Teacher {
 
       const dom = new JSDOM(Response.text);
       const tags = dom.window.document.querySelectorAll("td");
-      const result = [];
+      const result = {};
       let answer = 3;
       for (let id = 0; id < tags.length; id += 6) {
-        var CreateObject = {};
-        CreateObject["id"] = tags[id].textContent;
-        CreateObject["answer"] = +tags[answer].textContent;
-        result.push({ ...CreateObject });
+        result[tags[id].textContent.trim()] = +tags[answer].textContent;
         answer += 6;
       }
-      if (result[0]) {
+      if (result) {
         callback((err = null), result);
       } else {
         callback((err = new Error("Not Found Any Quiz")));
@@ -137,8 +135,4 @@ class Teacher {
   }
 }
 
-const t = new Teacher();
-t.Answer(2, 2, (err, res) => {
-  console.log(res);
-});
 module.exports = Teacher;
