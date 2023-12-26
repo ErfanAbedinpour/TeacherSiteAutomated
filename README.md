@@ -8,7 +8,6 @@ Also I hate my teacher so that's why we made it XD
 My Teacher Website Address (http://baazmooon.ir)
 Not https 😤😤
 
-**For Configures**
 ## Step1
 
 ```bash
