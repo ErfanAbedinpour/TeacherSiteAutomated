@@ -11,8 +11,8 @@ Not https 😤😤
 ## Step1
 
 ```bash
-  cd src
-  npm install
+cd src
+npm install
 ```
 
 
