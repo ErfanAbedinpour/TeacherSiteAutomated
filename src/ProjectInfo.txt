@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 User =>Login, Azmon
 
 Teacher => GetAnswer, Find Email and Password, Login,  
+=======
+User==> Login, FindAccount, Azmon, ResultAzmon, Role
+>>>>>>> Develoop

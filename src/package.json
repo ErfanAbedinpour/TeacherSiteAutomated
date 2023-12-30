@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "user": "node FallahAcountSource/User.js",
-    "teacher": "node FallahAcountSource/teacher.js"
+    "teacher": "node FallahAcountSource/teacher.js",
+    "run":"node/FallahAcountSource/main.js"
   },
   "author": "Erfan",
   "license": "MIT",
