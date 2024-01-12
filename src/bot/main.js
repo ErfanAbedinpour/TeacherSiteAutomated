@@ -1,12 +1,8 @@
-const Admin = require("./Admin");
-const User = require("./User");
 const { message } = require("telegraf/filters");
 const bot = require("./start");
+const { Login } = require("./User");
+const { azmon } = require("./User");
 
-const emailRegex = /(\w.+)@(\w+).(\w+)/g;
-
-let email = null;
-let password = null;
 bot.start((usr) => {
   usr.reply(`سلام به ربات خوش امدید
   برای نحوه کار ربات از
@@ -19,19 +15,8 @@ bot.help((ctx) => {
   وارد سایت شوید و سپس ازمون بدید`);
 });
 
-bot.hears("/login", (ctx) => {
-  ctx.reply(" :لطفا ایمیل خود برای ورود به سایت را وارد کنید ");
-  bot.hears(emailRegex, (usrEmail) => {
-    email = usrEmail.message.text;
-    usrEmail.reply("لطفا پسورد برای ورود به سایت را وارد کنید");
-    bot.on(message("text"), (usrPass) => {
-      password = usrPass.message.text;
-      console.log(email, password);
-      usrPass.reply("ایمیل و پسورد شما با موفقیت ثبت شده");
-    });
-  });
-});
-
+bot.command("Login", Login);
+bot.command("azmon", azmon);
 bot.launch();
 
 console.log("Bot is Run");

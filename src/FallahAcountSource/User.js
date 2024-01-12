@@ -2,14 +2,13 @@
 const { JSDOM } = require("jsdom");
 const superagent = require("superagent");
 const Teacher = require("./Teacher");
-const { text } = require("express");
 
 //User Entity
 class User {
   //retuen Coockie
   async Get_Coockie() {
     var Response = await superagent.post("http://baazmooon.ir/signup_sub.php");
-    return await Response.headers["set-cookie"][0].split(";")[0];
+    return Response.headers["set-cookie"][0].split(";")[0];
   }
 
   //Login on Fallah Account
@@ -18,7 +17,6 @@ class User {
     this.password = pass;
     return new Promise(async (resolve, reject) => {
       this.coockie = await this.Get_Coockie();
-      console.log(this.coockie);
       var Response = await superagent
         .post("http://baazmooon.ir/signin_sub.php")
         .set(
@@ -45,15 +43,15 @@ class User {
         "Faild To Login please Check Email or password \nor Turn off VPN or any IpChanger";
       const dom = new JSDOM(Response.text);
       const tags = dom.window.document.querySelectorAll("li");
-      try {
-        const Name = tags[5].textContent
-          .replace(")", "")
-          .replace("(", "")
-          .replace("خروج از سایت", "");
+      const Name = tags[5].textContent
+        .replace(")", "")
+        .replace("(", "")
+        .replace("خروج از سایت", "");
 
+      if (!Name.includes("توسعه برنامه سازی")) {
         resolve([Name, this.coockie]);
-      } catch {
-        reject(err);
+      } else {
+        resolve(false);
       }
     });
   }

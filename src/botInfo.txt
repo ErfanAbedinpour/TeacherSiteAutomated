@@ -1,0 +1,2 @@
+USER=>{Login, Azmon, SeeResult}
+ADMIN=>{recovert USER AND PASS}
