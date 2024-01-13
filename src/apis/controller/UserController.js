@@ -3,11 +3,17 @@ const User = require("../../FallahAcountSource/User");
 const user = new User();
 const Login = async (req, res) => {
   const body = req.body;
-  try {
-    const [Name] = await user.Login(body.email, body.password);
-    res.status(201).send(`sucesfully to ${Name} Account`);
-  } catch (err) {
-    res.status(400).send(err);
+  const Name = await user.Login(body.email, body.password);
+  if (Name[0]) {
+    res
+      .status(201)
+      .send(JSON.stringify({ message: `sucesfully to ${Name} Account` }));
+  } else {
+    res.status(400).send(
+      JSON.stringify({
+        message: "Email Or Password incorrect",
+      })
+    );
   }
 };
 
