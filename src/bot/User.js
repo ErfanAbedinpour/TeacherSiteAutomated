@@ -10,7 +10,7 @@ let isLogin = false;
 let isGetCourse = false;
 
 const Login = async (ctx) => {
-  //Localy Variable
+  //Local Variable
   let isEmailEmpty = true;
   let email = null; // UserEmail
   let password = null; // User Password
@@ -22,23 +22,22 @@ const Login = async (ctx) => {
     return usrEmail.reply("لطفا پسورد برای ورود به سایت را وارد کنید");
   });
 
-  bot.hears(/\w/, async (u) => {
+  bot.on(message("text"), async (u) => {
     if (isEmailEmpty) {
-      return u.reply("لطفا ایمیل معتبر وارد کنید");
+      return u.reply("ابتدا ایمیل را وارد کنید");
     }
     if (!isLogin) {
-      console.log("injam");
       password = u.message.text;
       console.log(email, password);
-      const Name = await user.Login(email, password);
-      if (Name) {
-        isLogin = true;
-        await u.reply(`با موفقیت به اکانت ${Name[0]}وارد شدید
-            برای خروج از اکانت از /logout استفاده کنید`);
-        bot.on(message("text"), azmon);
-      } else {
-        return u.reply("ایمیل یا رمز ورود اشتباه است");
-      }
+      // const Name = await user.Login(email, password);
+      // if (Name) {
+      //   isLogin = true;
+      //   await u.reply(`با موفقیت به اکانت ${Name[0]}وارد شدید
+      //       برای خروج از اکانت از /logout استفاده کنید`);
+      //   bot.on(message("text"), azmon);
+      // } else {
+      //   return u.reply("ایمیل یا رمز ورود اشتباه است");
+      // }
     }
   });
 };

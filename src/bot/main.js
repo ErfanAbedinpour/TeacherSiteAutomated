@@ -1,10 +1,11 @@
 const { message } = require("telegraf/filters");
 const bot = require("./start");
 const User = require("../FallahAcountSource/User");
-// const { Login } = require("./User");
-// const { azmon } = require("./User");
+const { Login } = require("./User");
 
+//Global Variable
 let isLogin = false;
+const emailRegex = /(\w.+)@(\w+).(\w+)/g;
 const courses = {
   1: "تجارت الکترونیک امنیت شبکه",
   2: "تجهیزات شبکه",
@@ -12,10 +13,9 @@ const courses = {
   4: "پیاده سازی و برنامه سازی",
 };
 const pdmns = [1, 2, 3, 4, 5];
-
 const usr = new User();
-
-let GoOnLoginAction = false;
+let email;
+let password;
 
 bot.start((usr) => {
   usr.reply(`سلام به ربات خوش امدید
@@ -29,74 +29,64 @@ bot.help((ctx) => {
   وارد سایت شوید و سپس ازمون بدید`);
 });
 
-bot.command("Login", (ctx) => {
-  let email = null;
-  let Password = null;
-  const emailRegex = /(\w.+)@(\w+).(\w+)/g;
-  ctx.reply("Please Enter Your FallahWebSite Email: ");
-  GoOnLoginAction = true;
-  while (GoOnLoginAction) {
-    bot.use(async (usrReply) => {
-      if (usrReply.message.text.match(emailRegex)) {
-        email = usrReply.message.text;
-        usrReply.reply("Thanks!!Please Enter Password: ");
-      } else if (email) {
-        Password = usrReply.message.text;
-        console.log(email, Password);
-        usrReply.reply("Please Wait...");
-        const Name = await usr.Login(email, Password);
-        if (Name[0]) {
-          isLogin = true;
-          usrReply.reply(`Succsesfully Login on ${Name[0]} account!!!`);
-          GoOnLoginAction = false;
-        } else {
-          usrReply.reply("faild to Login!! Email Or Password are Incorrect");
-          GoOnLoginAction = false;
-        }
-      }
-    });
+bot.command("login", Login);
+
+bot.on(message("text"), async (ctx) => {
+  const { text } = ctx.message;
+  if (text.startsWith("/email")) {
+    const Clean = text.replace("/email", "").trim();
+    if (!Clean.match(emailRegex)) {
+      return ctx.reply("please Enter Valid Email");
+    }
+    email = Clean;
+    return ctx.reply(
+      "email Sucsesfully Saved Now Write your password with /password *Your password*"
+    );
+  }
+  if (text.startsWith("/password")) {
+    if (!email) {
+      return ctx.reply("Please Enter First Email with /email *Your email*");
+    }
+    password = text.replace("/password", "").trim();
+    const Result = await usr.Login(email, password);
+    if (Result[0]) {
+      ctx.reply(`Sucsesfully Login on ${Result[0]} account`);
+      isLogin = true;
+      ctx.reply(`Course List: 
+      1)تجارت الکترونیک امنیت شبکه
+      2)تجهیزات شبکه
+      3)وب
+      4)پیاده سازی و برنامه ساز
+      `);
+      ctx.reply(`For azmon Press /course *Course Code [1,2,3,4,5]* *Podeman*`);
+    }
+  }
+  if (text.startsWith("/course") && isLogin) {
+    const [course, Pdmn] = text.replace("/course", "").trim().split(" ");
+    console.log(course, Pdmn);
+    if ((+course) in courses && pdmns.indexOf(+Pdmn) !== -1) {
+      console.log("injam");
+      const { QuizCount, Currect_Answer, Result } = await usr.Azmon(
+        course,
+        Pdmn
+      );
+      console.log(QuizCount, Currect_Answer, Result);
+      return ctx.reply(
+        `Result :${Result}\n QuizCount:${QuizCount}\n CurentAnswer:${Currect_Answer}`
+      );
+    }
+    ctx.reply("Please Enter Valid Course Name Or Podman");
+    return ctx.reply(`Course List: 
+      1)تجارت الکترونیک امنیت شبکه
+      2)تجهیزات شبکه۲
+      3)وب
+      4)پیاده سازی و برنامه ساز
+      `);
+  } else if (!isLogin) {
+    return ctx.reply("Please First Login!! ");
   }
 });
 
-bot.command("azmon", (ctx) => {
-  GoOnLoginAction = false;
-  let isCourseEmpty = true;
-  if (!isLogin) {
-    return ctx.reply("Please First login with /Login");
-  }
-  ctx.reply(`لطفان کد درس مورد نظر خود را وارد کنید:
-  1)تجارت الکترونیک امنیت شبکه
-  2)تجهیزات شبکه
-  3)وب
-  4)پیاده سازی و برنامه سازی`);
-
-  bot.on(message("text"), async (usrInput) => {
-    bot.remove;
-    let course;
-    let pdmn;
-    const { text } = usrInput.message;
-    if ((!+text) in courses) {
-      return usrInput.reply(`Please Eneter Valid Coded\n ${courses}`);
-    } else {
-      course = text;
-      isCourseEmpty = false;
-      usrInput.reply("Please Enter Podman: ");
-      bot.removeListener("message");
-    }
-    if (!isCourseEmpty) {
-      if (!pdmns.includes(+text)) {
-        return usrInput.reply("Please Enter Valid Pdmn!! 1,2,3,4,5");
-      }
-      pdmn = text;
-      try {
-        const result = await usr.Azmon(course, pdmn);
-        return usrInput.reply(result);
-      } catch (err) {
-        return usrInput.reply(err);
-      }
-    }
-  });
-});
 bot.launch();
 
 console.log("Bot is Run");
