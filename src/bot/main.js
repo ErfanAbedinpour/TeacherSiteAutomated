@@ -18,18 +18,16 @@ let email;
 let password;
 
 bot.start((usr) => {
-  usr.reply(`سلام به ربات خوش امدید
-  برای نحوه کار ربات از
-  /help استفاده کنید`);
+  usr.reply("use /help for Help");
 });
 
 bot.help((ctx) => {
-  ctx.reply(`برای دادن ازمون ابتدا باید با 
-  /login
-  وارد سایت شوید و سپس ازمون بدید`);
+  ctx.reply(`
+  /email {fallah WebSiteEmail}
+  /password {fallah WebSite Password}
+  after That Use
+  /course {CourseCode} {Course Pdmn}`);
 });
-
-bot.command("login", Login);
 
 bot.on(message("text"), async (ctx) => {
   const { text } = ctx.message;
@@ -48,6 +46,7 @@ bot.on(message("text"), async (ctx) => {
       return ctx.reply("Please Enter First Email with /email *Your email*");
     }
     password = text.replace("/password", "").trim();
+    ctx.reply("Please Wait!!");
     const Result = await usr.Login(email, password);
     if (Result[0]) {
       ctx.reply(`Sucsesfully Login on ${Result[0]} account`);
@@ -58,10 +57,15 @@ bot.on(message("text"), async (ctx) => {
       3)وب
       4)پیاده سازی و برنامه ساز
       `);
+      ctx.reply(`(1): "تجارت الکترونیک امنیت شبکه",
+  (2): "تجهیزات شبکه",
+  (3): "وب",
+  (4): "پیاده سازی و برنامه سازی",`);
       ctx.reply(`For azmon Press /course *Course Code [1,2,3,4,5]* *Podeman*`);
     }
   }
   if (text.startsWith("/course") && isLogin) {
+    ctx.reply("Please Wait!!");
     const [course, Pdmn] = text.replace("/course", "").trim().split(" ");
     console.log(course, Pdmn);
     if ((+course) in courses && pdmns.indexOf(+Pdmn) !== -1) {
