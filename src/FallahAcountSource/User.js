@@ -140,16 +140,18 @@ class User {
             cat: String(course),
             pdmn: String(pdmn),
           });
-
         const data = {};
         const dom = new JSDOM(Response.text);
         const Tags = dom.window.document.querySelectorAll("b");
         const answer = await teacher.Answer(course, pdmn);
         Tags.forEach((i) => {
           const quiz = i.textContent.replace("سوال", "").split("  ")[0].trim();
+          console.log("quiz is ", quiz);
           data[quiz] = String(answer[quiz]);
         });
+        console.log("Data is ", data);
         const result = await this.SendAnswer(data);
+        console.log("result is ", result);
         resolve(result);
       } catch {
         reject("Your Must Login First");
@@ -186,7 +188,7 @@ class User {
           .send(data);
 
         const dom = new JSDOM(Response.text);
-        const Tags = await dom.window.document.querySelectorAll("th");
+        const Tags = dom.window.document.querySelectorAll("th");
         resolve({
           QuizCount: Tags[2].textContent.trim(),
           Currect_Answer: Tags[4].textContent.trim(),
@@ -200,6 +202,14 @@ class User {
     });
   }
 }
+
+// (async () => {
+//   const u = new User();
+//   const Name = (await u.Login("test@gmail.com", "1234"))[0];
+//   console.log(Name);
+//   r = await u.Azmon("1", "1");
+//   console.log(r);
+// })();
 
 //Exports Modules
 module.exports = User;

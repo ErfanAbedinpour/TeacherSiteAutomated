@@ -17,6 +17,7 @@
     "jsdom": "^22.1.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.3",
+    "node-telegram-bot-api": "^0.64.0",
     "superagent": "^8.1.2",
     "telegraf": "^4.15.3"
   },

@@ -60,7 +60,7 @@ class Teacher {
   //retuen Quiz Answer
   async Answer(course, pdmn) {
     return new Promise(async (resolve, reject) => {
-      const [Name, coockie] = await this.Login();
+      const [_, coockie] = await this.Login();
       var Response = await superagent
         .post("http://baazmooon.ir/addquestion.php")
         .set(
