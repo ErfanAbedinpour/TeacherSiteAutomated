@@ -1,6 +1,10 @@
-const fs = require("fs");
+let data = {
+  Name: "Babool",
+  Country: "Iran",
+  Age: 20
+}
 
-fs.readFile("./REDME.md", { encoding: "utf-8" }, (err, data) => {
-  console.log(err);
-  console.log(data);
-});
+const keys = Object.keys(data);
+a = data[keys[keys.length * Math.random() << 0]] = ""
+console.log(a);
+console.log(data);

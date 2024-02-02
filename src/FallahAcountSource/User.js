@@ -85,7 +85,7 @@ class User {
 
   //this is AutoMatic Resolve Azmon
 
-  async Azmon(course, pdmn) {
+  async Azmon(course, pdmn,wrong=0) {
     //chooise Teacher For Quiz
     return new Promise(async (resolve, reject) => {
       try {
@@ -140,15 +140,22 @@ class User {
             cat: String(course),
             pdmn: String(pdmn),
           });
-        const data = {};
+        let data = {};
         const dom = new JSDOM(Response.text);
         const Tags = dom.window.document.querySelectorAll("b");
         const answer = await teacher.Answer(course, pdmn);
         Tags.forEach((i) => {
           const quiz = i.textContent.replace("سوال", "").split("  ")[0].trim();
-          console.log("quiz is ", quiz);
           data[quiz] = String(answer[quiz]);
         });
+
+        const keys = Object.keys(data);
+        if (wrong >= keys.length) {
+          wrong = keys.length  
+        }
+        for (let i = 0; i<wrong; i++){
+          data[keys[keys.length * Math.random() << 0]] = "";  
+        }
         const result = await this.SendAnswer(data);
         console.log("result is ", result);
         resolve(result);

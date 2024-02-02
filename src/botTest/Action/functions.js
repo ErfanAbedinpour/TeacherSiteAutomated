@@ -1,8 +1,7 @@
 const bot = require("../start");
 const User = require("../../FallahAcountSource/User");
 
-let [email,password,isGetEmail,IsLogin,course,pdmn] = ["","",false,false,0,0]
-const waitChat = []
+let [email,password,isGetEmail,IsLogin,course,pdmn,wrong] = ["","",false,false,0,0,0]
 
 const emailRegex = /(\w).*@(\w.+)/;
 
@@ -65,13 +64,23 @@ const azmonListiner = async (message, chat) => {
     } else {
       bot.sendMessage(message.chat.id, `لطفا کد درس معتبر وارد کنید\n${coursCodes}`);
     }
-  } else {
+  } else if(!pdmn){
     pdmn = message.text;
     if (["1", "2", "3", "4", "5"].indexOf(pdmn) != -1) {
-      console.log(`course ${course}, pdmn ${pdmn}`);
-      try {
+      console.log(`course ${course}, pdmn ${pdmn}, wrong ${wrong}`);
+      bot.sendMessage(message.chat.id, `برای شک نکردن دبیر (تعداد غلط؟) `);
+    } else {
+      bot.sendMessage(message.chat.id, `لطفا پودمان معتبر وارد کنید`);
+    }
+  } else {
+    wrong = message.text;
+    try {
+      if (typeof +wrong != "number") {
+        return bot.sendMessage(message.chat.id,"لطفا عدد معتبر وارد کنید");
+      }
+      
         bot.sendMessage(message.chat.id, `صبر کنید لطفا`);
-        const {QuizCount,Currect_Answer,Result} = await user.Azmon(course, pdmn);
+        const {QuizCount,Currect_Answer,Result} = await user.Azmon(course, pdmn,+wrong);
         bot.sendMessage(message.chat.id, `تعداد سوال
         ${QuizCount}
         جواب درست
@@ -80,6 +89,7 @@ const azmonListiner = async (message, chat) => {
         ${Result}`);
         course = "";
         pdmn = "";
+        wrong = 0;
         return bot.removeListener('message', azmonListiner);
       } catch (err) {
         bot.sendMessage(message.chat.id, `${err}`);
@@ -87,9 +97,6 @@ const azmonListiner = async (message, chat) => {
         pdmn=""
         return bot.removeListener('message', azmonListiner);
       }
-    } else {
-      bot.sendMessage(message.chat.id, `لطفا پودمان معتبر وارد کنید`);
-    }
   }
 }
     
