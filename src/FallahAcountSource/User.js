@@ -149,12 +149,11 @@ class User {
           console.log("quiz is ", quiz);
           data[quiz] = String(answer[quiz]);
         });
-        console.log("Data is ", data);
         const result = await this.SendAnswer(data);
         console.log("result is ", result);
         resolve(result);
       } catch {
-        reject("Your Must Login First");
+        reject("در این پودمان سوالی طرح نشده");
       }
     });
   }
@@ -186,19 +185,19 @@ class User {
           )
           .type("form")
           .send(data);
-
-        const dom = new JSDOM(Response.text);
-        const Tags = dom.window.document.querySelectorAll("th");
-        resolve({
-          QuizCount: Tags[2].textContent.trim(),
-          Currect_Answer: Tags[4].textContent.trim(),
-          Result: Tags[10].textContent.trim(),
-          Count,
-        });
-        Count += 1;
-      } else {
-        reject("you can only use 5 times for any podman");
-      }
+        
+        try {
+          const dom = new JSDOM(Response.text);
+          const Tags = dom.window.document.querySelectorAll("th");
+          resolve({
+            QuizCount: Tags[2].textContent.trim(),
+            Currect_Answer: Tags[4].textContent.trim(),
+            Result: Tags[10].textContent.trim(),        
+          });
+        } catch (err) {
+          reject('در این پودمان سوالی طرح نشده')
+        }
+      } 
     });
   }
 }
