@@ -1,8 +1,7 @@
-// const { Telegraf } = require("telegraf");
-// require('dotenv').config()
-// // const { Connect } = require("./proxy");
-// // Connect();
+const Telegram = require("node-telegram-bot-api");
 
-// const bot = new Telegraf(process.env['BotToken']);
+const bot = new Telegram("6903234677:AAGMzTgveht0K0bkGXPrs8ToiKJUOmoXXwc", {
+  polling: true,
+});
 
-// module.exports = bot;
+module.exports = bot;
