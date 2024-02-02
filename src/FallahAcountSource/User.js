@@ -203,13 +203,6 @@ class User {
   }
 }
 
-// (async () => {
-//   const u = new User();
-//   const Name = (await u.Login("test@gmail.com", "1234"))[0];
-//   console.log(Name);
-//   r = await u.Azmon("1", "1");
-//   console.log(r);
-// })();
 
 //Exports Modules
 module.exports = User;

@@ -4,9 +4,9 @@ let email = "";
 let password = "";
 let isGetEmail = false;
 let IsLogin = false;
-let IsCourseGet = false;
 let course = 0;
 let pdmn = 0;
+const waitChat = []
 
 const emailRegex = /(\w).*@(\w.+)/;
 
@@ -16,14 +16,15 @@ const courses = {
   3: "وب",
   4: "پیاده سازی و برنامه سازی",
 };
+
+
 const user = new User();
 
-const Login = (msg, chat) => {
+const Login = (msg, _) => {
   bot.sendMessage(msg.chat.id, "email: ");
   bot.on("message", async (message, chat) => {
     const text = message.text;
     if (text.match(emailRegex)) {
-      //GetPassword
       email = text.trim();
       isGetEmail = true;
       bot.sendMessage(msg.chat.id, `Password: `);
@@ -51,43 +52,50 @@ const Login = (msg, chat) => {
   return 0;
 };
 
-const azmon = (msg, chat) => {
+const azmon = async(msg, _) => {
+  let coursCodes = "";
   const msg_id = msg.chat.id;
-  if (IsLogin) {
-    let coursCodes = "";
-    for (let i in courses) {
-      coursCodes += `${i}:${courses[i]}\n`;
-    }
-    bot.sendMessage(msg_id, `لطفا کد درس را وارد کنید\n${coursCodes}`);
-    bot.on("message", async (message, chat) => {
-      if (!IsCourseGet) {
-        if (message.text in courses) {
-          course = message.text;
-          IsCourseGet = true;
-          bot.sendMessage(msg_id, `لطفان پودمان معتبر نظر وارد کنید`);
-        } else {
-          bot.sendMessage(msg_id, `لطفا کد درس معتبر وارد کنید\n${coursCodes}`);
-        }
-      } else {
-        pdmn = message.text;
-        if (["1", "2", "3", "4", "5"].indexOf(pdmn) != -1) {
-          console.log(`course ${course}, pdmn ${pdmn}`);
-          try {
-            const Result = await user.Azmon(course, pdmn);
-            console.log(Result);
-            bot.sendMessage(msg_id, `${Result}`);
-          } catch (err) {
-            bot.sendMessage(msg_id, `${err}`);
-          }
-        } else {
-          bot.sendMessage(msg_id, `لطفا پودمان معتبر وارد کنید`);
-        }
-      }
-    });
-  } else {
-    return bot.sendMessage(msg_id, "لطفا اول لاگین کنید");
+  for (let i in courses) {
+    coursCodes+=`code:${i}:${course[i]}`
   }
+  bot.sendMessage(msg_id, "لطفا کد درس مورد نظر را وارو کنید")
+  if(waitChat.includes(msg_id)===-1)
+  bot.on('message', async(message, _) => {
+    const text = message.text
+    if (!course) {
+      if (text in courses) {
+        course = text
+        bot.sendMessage(msg_id, "لطفا پودمان مورد نظر را وارد کنید")  
+      } else {
+        bot.sendMessage(msg_id, `لطفا کد درس  معتبر وارد کتید \n${coursCodes}‍‍‍‍‍`)  
+      }
+    } else {
+      if (['1', "2", "3", "4", "5"].indexOf(text) != -1) {
+        pdmn = text
+        const { QuizCount, Currect_Answer, Result } = await user.Azmon(course, pdmn)
+        course = "";
+        pdmn = "";
+        return bot.sendMessage(msg_id, `‍‍‍‍‍تعداد سوال${QuizCount}\nجواب درست${Currect_Answer}\nدرصد${Result}`)
+
+      } else {
+        bot.sendMessage(msg_id,"پودمان معتبر وارد کنید")  
+      }
+        
+    }
+  })
+  return 0;
 };
+
+const Logout = async(msg, chat) => { 
+  try {
+    if (IsLogin) {
+      const Result = await user.LogOut()
+      bot.sendMessage(msg.chat.id, 'با موفقیت خارج شدید')
+    }
+  } catch (err) {
+    bot.sendMessage(msg.chat.id, 'برای خروج خطایی رخ داد')
+  }
+}
 
 module.exports = {
   Login,
