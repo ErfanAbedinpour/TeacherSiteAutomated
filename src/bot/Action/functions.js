@@ -22,7 +22,7 @@ const user = new User();
 
 const LoginListiner = async (message, chat) => {
   const text = message.text;
-  if (message.entities[0]['type'] == 'bot_command') {
+  if (text.startsWith('/')) {
     return bot.removeListener('message', LoginListiner)
   }
     if (!isGetEmail) {
@@ -30,8 +30,6 @@ const LoginListiner = async (message, chat) => {
         email = text.trim();
         isGetEmail = true;
         return bot.sendMessage(message.chat.id, `پسورد سایت فلاح؟ `);  
-      } else {
-        
       }
     } if (isGetEmail) {
       password = text.trim();
@@ -62,7 +60,7 @@ const LoginListiner = async (message, chat) => {
 }
 
 const azmonListiner = async (message, chat) => {
-  if (message.entities[0]['type'] === 'bot_command') {
+  if (message.text.startsWith('/')) {
     return bot.removeListener('message', azmonListiner)
   }
   if (!course) {
@@ -113,9 +111,8 @@ const azmonListiner = async (message, chat) => {
     
 const Login = (msg, _) => {
   if (!IsLogin) {
-    bot.sendMessage(msg.chat.id, "ایمیل سایت فلاح؟ ");
+    bot.sendMessage(msg.chat.id, "ایمیل برای ورود به سایت فلاح؟");
     bot.removeListener('message', azmonListiner)
-    bot.removeListener('message', LoginListiner)
     bot.on("message",LoginListiner);  
   }else{
     return bot.sendMessage(msg.chat.id, "شما قبلان لاگین کرده اید\nبرای خروج از \n/logout استفاده کنید")
@@ -138,11 +135,12 @@ const Logout = async (msg, chat) => {
   bot.removeListener('message', LoginListiner)
   bot.removeListener('message', azmonListiner)
   try {
-    
     if (IsLogin) {
       await user.LogOut();
       [email,password,isGetEmail,IsLogin,course,pdmn] = ["","","","","",""]
       return bot.sendMessage(msg.chat.id, 'با موفقیت خارج شدید')
+    } else {
+      return bot.sendMessage(msg.chat.id, 'هنوز وارد اکانتی نشدید که بخواید خروج کنید اسکل:(')
     }
   } catch (err) {
     bot.sendMessage(msg.chat.id, 'برای خروج خطایی رخ داد')
@@ -157,7 +155,9 @@ const help = (msg, chat) => {
   بد از لاگین با دستور
   /azmon
   میتونید ازمون بد
-  ید`);
+
+	  /logout
+	  برای خروخ از اکانت`);
 }
 
 const start = (msg, chat) => {
